@@ -1,10 +1,11 @@
 using System.Windows;
 
+// ThemeInfo 属性は WPF に対してテーマ固有および汎用の
+// リソース辞書の検索先を知らせます。これによりコントロールが
+// リソースを要求したときにスタイルやブラシなどを正しく見つけることができます。
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.None,            //where theme specific resource dictionaries are located
-                                                //(used if a resource is not found in the page,
-                                                // or application resource dictionaries)
-    ResourceDictionaryLocation.SourceAssembly   //where the generic resource dictionary is located
-                                                //(used if a resource is not found in the page,
-                                                // app, or any theme specific resource dictionaries)
+    ResourceDictionaryLocation.None,            // このアセンブリではテーマ固有のリソース辞書を使用しません
+                                                // （ページやアプリケーションのリソース辞書に見つからない場合に使用されます）
+    ResourceDictionaryLocation.SourceAssembly   // 汎用のリソース辞書はこのアセンブリにあります
+                                                // （それ以外でリソースが見つからない場合のフォールバックです）
 )]
