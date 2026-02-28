@@ -280,7 +280,12 @@ namespace ZkURLManager.ViewModels
             {
                 var key = match.Groups[1].Value;
                 if (lookup.TryGetValue(key, out var val))
+                {
+                    // エントリの値に '%' が含まれている場合は URL エンコードして置換する
+                    if (!string.IsNullOrEmpty(val) && val.Contains('%'))
+                        return Uri.EscapeDataString(val);
                     return val ?? string.Empty;
+                }
                 return string.Empty; // 見つからない場合は空文字列にする
             });
 
