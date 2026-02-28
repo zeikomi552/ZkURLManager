@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="640" Width="960"
+        Title="{Binding Title}" Height="640" Width="1200"
         Background="{DynamicResource MaterialDesignPaper}">
     <Grid>
         <Border Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="16" Margin="16">
@@ -17,7 +17,7 @@
             </Border.Effect>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -38,9 +38,15 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-                        <Button Command="{Binding AddPresetCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Width="70">追加</Button>
-                        <Button Command="{Binding DuplicatePresetCommand}" Style="{StaticResource MaterialDesignFlatButton}" Width="90" Margin="8,0,0,0">複製</Button>
-                        <Button Command="{Binding RemovePresetCommand}" Style="{StaticResource MaterialDesignFlatButton}" Width="70" Margin="8,0,0,0">削除</Button>
+                        <Button Command="{Binding AddPresetCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Width="60">追加</Button>
+                        <Button Command="{Binding DuplicatePresetCommand}" Style="{StaticResource MaterialDesignFlatButton}" Width="70" Margin="6,0,0,0">複製</Button>
+                        <Button Command="{Binding RemovePresetCommand}" Style="{StaticResource MaterialDesignFlatButton}" Width="60" Margin="6,0,0,0">削除</Button>
+                        <Button Command="{Binding DataContext.MovePresetUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="12,0,0,0">
+                            <materialDesign:PackIcon Kind="ArrowUp" Width="16" Height="16" />
+                        </Button>
+                        <Button Command="{Binding DataContext.MovePresetDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="6,0,0,0">
+                            <materialDesign:PackIcon Kind="ArrowDown" Width="16" Height="16" />
+                        </Button>
                     </StackPanel>
                 </StackPanel>
 
@@ -70,17 +76,23 @@
                     </DataGrid>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
-                        <Button Command="{Binding AddEntryCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button Command="{Binding AddEntryCommand}" Width="110" Style="{StaticResource MaterialDesignRaisedButton}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="追加" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding RemoveEntryCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button Command="{Binding RemoveEntryCommand}" Width="110" Style="{StaticResource MaterialDesignRaisedButton}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="Minus" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="削除" VerticalAlignment="Center" />
                             </StackPanel>
+                        </Button>
+                        <Button Command="{Binding DataContext.MoveEntryUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="8,0,0,0">
+                            <materialDesign:PackIcon Kind="ArrowUp" Width="16" Height="16" />
+                        </Button>
+                        <Button Command="{Binding DataContext.MoveEntryDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="6,0,0,0">
+                            <materialDesign:PackIcon Kind="ArrowDown" Width="16" Height="16" />
                         </Button>
                     </StackPanel>
 

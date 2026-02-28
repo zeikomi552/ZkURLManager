@@ -87,6 +87,9 @@ namespace ZkURLManager.ViewModels
                     // 選択エントリをリセット
                     SelectedEntry = null;
                     UpdateRenderedUrl();
+                    // プリセット移動ボタンの状態を更新
+                    MovePresetUpCommand?.RaiseCanExecuteChanged();
+                    MovePresetDownCommand?.RaiseCanExecuteChanged();
                 }
             }
         }
@@ -114,7 +117,15 @@ namespace ZkURLManager.ViewModels
         public Entry? SelectedEntry
         {
             get => _selectedEntry;
-            set => SetProperty(ref _selectedEntry, value);
+            set
+            {
+                if (SetProperty(ref _selectedEntry, value))
+                {
+                    // 選択が変わったら移動ボタンの有効/無効を更新
+                    MoveEntryUpCommand?.RaiseCanExecuteChanged();
+                    MoveEntryDownCommand?.RaiseCanExecuteChanged();
+                }
+            }
         }
 
         /// <summary>リストに新しいエントリを追加するコマンド。</summary>
@@ -258,6 +269,21 @@ namespace ZkURLManager.ViewModels
                 .ObservesProperty(() => SelectedPreset);
             DuplicatePresetCommand = new DelegateCommand(OnDuplicatePreset, CanDuplicatePreset)
                 .ObservesProperty(() => SelectedPreset);
+            // Preset 移動コマンド初期化
+            MovePresetUpCommand = new DelegateCommand(OnMovePresetUp, CanMovePresetUp)
+                .ObservesProperty(() => SelectedPreset)
+                .ObservesProperty(() => Presets.Count);
+            MovePresetDownCommand = new DelegateCommand(OnMovePresetDown, CanMovePresetDown)
+                .ObservesProperty(() => SelectedPreset)
+                .ObservesProperty(() => Presets.Count);
+
+            // エントリ移動コマンド初期化
+            MoveEntryUpCommand = new DelegateCommand(OnMoveEntryUp, CanMoveEntryUp)
+                .ObservesProperty(() => SelectedEntry)
+                .ObservesProperty(() => Entries.Count);
+            MoveEntryDownCommand = new DelegateCommand(OnMoveEntryDown, CanMoveEntryDown)
+                .ObservesProperty(() => SelectedEntry)
+                .ObservesProperty(() => Entries.Count);
 
             // 初期プリセットの作成（サンプル）
             var preset1 = new Preset { Name = "Default", Icon = "Link", Description = "サンプルプリセット", UrlTemplate = "http://xxxx.xxx.xxx:?param1={ExampleKey1}&param2={ExampleKey2}" };
@@ -274,6 +300,10 @@ namespace ZkURLManager.ViewModels
         public DelegateCommand AddPresetCommand { get; }
         public DelegateCommand RemovePresetCommand { get; }
         public DelegateCommand DuplicatePresetCommand { get; }
+        public DelegateCommand MovePresetUpCommand { get; }
+        public DelegateCommand MovePresetDownCommand { get; }
+        public DelegateCommand MoveEntryUpCommand { get; }
+        public DelegateCommand MoveEntryDownCommand { get; }
 
         private void OnAddPreset()
         {
@@ -331,6 +361,56 @@ namespace ZkURLManager.ViewModels
         private bool CanDuplicatePreset()
             => SelectedPreset != null;
 
+        private void OnMovePresetUp()
+        {
+            if (SelectedPreset == null)
+                return;
+            var idx = Presets.IndexOf(SelectedPreset);
+            if (idx > 0)
+            {
+                try
+                {
+                    Presets.Move(idx, idx - 1);
+                    // Force selection refresh: temporarily clear and re-select moved item
+                    var moved = Presets[idx - 1];
+                    SelectedPreset = null;
+                    SelectedPreset = moved;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"プリセットの移動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                MovePresetUpCommand?.RaiseCanExecuteChanged();
+                MovePresetDownCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
+        private void OnMovePresetDown()
+        {
+            if (SelectedPreset == null)
+                return;
+            var idx = Presets.IndexOf(SelectedPreset);
+            if (idx >= 0 && idx < Presets.Count - 1)
+            {
+                try
+                {
+                    Presets.Move(idx, idx + 1);
+                    var moved = Presets[idx + 1];
+                    SelectedPreset = null;
+                    SelectedPreset = moved;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"プリセットの移動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                MovePresetUpCommand?.RaiseCanExecuteChanged();
+                MovePresetDownCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
+        private bool CanMovePresetUp() => SelectedPreset != null && Presets.IndexOf(SelectedPreset) > 0;
+        private bool CanMovePresetDown() => SelectedPreset != null && Presets.IndexOf(SelectedPreset) >= 0 && Presets.IndexOf(SelectedPreset) < Presets.Count - 1;
+
         /// <summary>アプリケーションを終了します。</summary>
         private void OnExit()
         {
@@ -344,6 +424,51 @@ namespace ZkURLManager.ViewModels
             Entries.Add(entry);
             SelectedEntry = entry;
         }
+
+        private void OnMoveEntryUp()
+        {
+            try
+            {
+                if (SelectedEntry == null)
+                    return;
+                var idx = Entries.IndexOf(SelectedEntry);
+                if (idx > 0)
+                {
+                    Entries.Move(idx, idx - 1);
+                    SelectedEntry = Entries[idx - 1];
+                    MoveEntryUpCommand?.RaiseCanExecuteChanged();
+                    MoveEntryDownCommand?.RaiseCanExecuteChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"エントリの移動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnMoveEntryDown()
+        {
+            try
+            {
+                if (SelectedEntry == null)
+                    return;
+                var idx = Entries.IndexOf(SelectedEntry);
+                if (idx >= 0 && idx < Entries.Count - 1)
+                {
+                    Entries.Move(idx, idx + 1);
+                    SelectedEntry = Entries[idx + 1];
+                    MoveEntryUpCommand?.RaiseCanExecuteChanged();
+                    MoveEntryDownCommand?.RaiseCanExecuteChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"エントリの移動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private bool CanMoveEntryUp() => SelectedEntry != null && Entries.IndexOf(SelectedEntry) > 0;
+        private bool CanMoveEntryDown() => SelectedEntry != null && Entries.IndexOf(SelectedEntry) >= 0 && Entries.IndexOf(SelectedEntry) < Entries.Count - 1;
 
         /// <summary>選択中のエントリがあれば削除します。</summary>
         private void OnRemoveEntry()
@@ -387,6 +512,8 @@ namespace ZkURLManager.ViewModels
 
             // コレクションが変更されたらプレビューを再計算
             UpdateRenderedUrl();
+            MoveEntryUpCommand?.RaiseCanExecuteChanged();
+            MoveEntryDownCommand?.RaiseCanExecuteChanged();
         }
 
         /// <summary>
