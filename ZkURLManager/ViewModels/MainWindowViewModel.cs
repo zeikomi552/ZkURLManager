@@ -25,6 +25,29 @@ namespace ZkURLManager.ViewModels
     /// </summary>
     public class MainWindowViewModel : BindableBase
     {
+        /// <summary>
+        /// URL テンプレートとエントリ群をまとめたプリセットを表すクラス。
+        /// </summary>
+        public class Preset : INotifyPropertyChanged
+        {
+            private string _name = string.Empty;
+            private string _urlTemplate = string.Empty;
+            private string _icon = "Link";
+            private string _description = string.Empty;
+
+            public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+            public string UrlTemplate { get => _urlTemplate; set { _urlTemplate = value; OnPropertyChanged(); } }
+            // 表示用のアイコン名（MaterialDesign PackIcon の Kind に対応）
+            public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
+            // プリセットの説明文
+            public string Description { get => _description; set { _description = value; OnPropertyChanged(); } }
+            public ObservableCollection<Entry> Entries { get; set; } = new ObservableCollection<Entry>();
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged([CallerMemberName] string? name = null)
+                => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
         // ウィンドウタイトルのバックフィールド
         private string _title = "ZkURLManager";
 
@@ -43,12 +66,52 @@ namespace ZkURLManager.ViewModels
         /// </summary>
         public DelegateCommand ExitCommand { get; }
         /// <summary>
-        /// パラメータやテンプレートを構築するためのキー/値エントリのコレクション。
-        /// ビューが変更を監視できるよう ObservableCollection を使用しています。
+        /// 複数保持するプリセット（URL とそのキー/値エントリのセット）。
         /// </summary>
-        public ObservableCollection<Entry> Entries { get; } = new ObservableCollection<Entry>();
-        private Entry _selectedEntry;
-        public Entry SelectedEntry
+        public ObservableCollection<Preset> Presets { get; } = new ObservableCollection<Preset>();
+
+        /// <summary>
+        /// 現在選択されているプリセット。
+        /// SelectedPreset を切り替えると、Entries がそのプリセットに合わせて切り替わります。
+        /// </summary>
+        private Preset? _selectedPreset;
+        public Preset? SelectedPreset
+        {
+            get => _selectedPreset;
+            set
+            {
+                if (SetProperty(ref _selectedPreset, value))
+                {
+                    // 切り替え時に Entries を差し替える
+                    Entries = _selectedPreset?.Entries ?? new ObservableCollection<Entry>();
+                    // 選択エントリをリセット
+                    SelectedEntry = null;
+                    UpdateRenderedUrl();
+                }
+            }
+        }
+
+        /// <summary>
+        /// UI にバインドするエントリコレクション。内部的には SelectedPreset.Entries を参照します。
+        /// </summary>
+        private ObservableCollection<Entry> _entries = new ObservableCollection<Entry>();
+        public ObservableCollection<Entry> Entries
+        {
+            get => _entries;
+            private set
+            {
+                if (_entries == value)
+                    return;
+                if (_entries != null)
+                    _entries.CollectionChanged -= Entries_CollectionChanged;
+                _entries = value ?? new ObservableCollection<Entry>();
+                _entries.CollectionChanged += Entries_CollectionChanged;
+                RaisePropertyChanged(nameof(Entries));
+            }
+        }
+
+        private Entry? _selectedEntry;
+        public Entry? SelectedEntry
         {
             get => _selectedEntry;
             set => SetProperty(ref _selectedEntry, value);
@@ -68,14 +131,22 @@ namespace ZkURLManager.ViewModels
         public DelegateCommand CopyParametersCommand { get; }
         /// <summary>パラメータテンプレート（プレースホルダ）をクリップボードにコピーするコマンド。</summary>
         public DelegateCommand CopyParameterTemplateCommand { get; }
-        private string _urlTemplate = string.Empty;
+        /// <summary>
+        /// 現在選択されているプリセットの UrlTemplate を参照するプロパティ。
+        /// SelectedPreset が null の場合は空文字列を返します。
+        /// </summary>
         public string UrlTemplate
         {
-            get => _urlTemplate;
+            get => SelectedPreset?.UrlTemplate ?? string.Empty;
             set
             {
-                if (SetProperty(ref _urlTemplate, value))
+                if (SelectedPreset == null)
+                    return;
+                if (SelectedPreset.UrlTemplate != value)
                 {
+                    SelectedPreset.UrlTemplate = value;
+                    // UrlTemplate が変わったことを通知
+                    RaisePropertyChanged(nameof(UrlTemplate));
                     UpdateRenderedUrl();
                 }
             }
@@ -181,16 +252,84 @@ namespace ZkURLManager.ViewModels
             CopyParameterTemplateCommand = new DelegateCommand(OnCopyParameterTemplate, CanCopyParameters)
                 .ObservesProperty(() => Entries.Count);
 
-            // コレクションの変更を監視して、エントリの変更時にプレビューを再計算する
-            Entries.CollectionChanged += Entries_CollectionChanged;
+            // Preset 関連コマンド
+            AddPresetCommand = new DelegateCommand(OnAddPreset);
+            RemovePresetCommand = new DelegateCommand(OnRemovePreset, CanRemovePreset)
+                .ObservesProperty(() => SelectedPreset);
+            DuplicatePresetCommand = new DelegateCommand(OnDuplicatePreset, CanDuplicatePreset)
+                .ObservesProperty(() => SelectedPreset);
 
-            // 初期表示用のサンプルデータ
-            Entries.Add(new Entry { Key = "ExampleKey1", Value = "ExampleValue1" });
-            Entries.Add(new Entry { Key = "ExampleKey2", Value = "ExampleValue2" });
+            // 初期プリセットの作成（サンプル）
+            var preset1 = new Preset { Name = "Default", Icon = "Link", Description = "サンプルプリセット", UrlTemplate = "http://xxxx.xxx.xxx:?param1={ExampleKey1}&param2={ExampleKey2}" };
+            preset1.Entries.Add(new Entry { Key = "ExampleKey1", Value = "ExampleValue1" });
+            preset1.Entries.Add(new Entry { Key = "ExampleKey2", Value = "ExampleValue2" });
 
-            // レンダリングの例としてのデフォルトテンプレート
-            UrlTemplate = "http://xxxx.xxx.xxx:?param1={ExampleKey1}&param2={ExampleKey2}";
+            Presets.Add(preset1);
+            SelectedPreset = preset1;
         }
+
+        /// <summary>
+        /// プリセット追加/削除用のコマンド
+        /// </summary>
+        public DelegateCommand AddPresetCommand { get; }
+        public DelegateCommand RemovePresetCommand { get; }
+        public DelegateCommand DuplicatePresetCommand { get; }
+
+        private void OnAddPreset()
+        {
+            var p = new Preset { Name = $"Preset{Presets.Count + 1}", UrlTemplate = string.Empty };
+            Presets.Add(p);
+            SelectedPreset = p;
+        }
+
+        private void OnRemovePreset()
+        {
+            if (SelectedPreset != null)
+            {
+                Presets.Remove(SelectedPreset);
+                SelectedPreset = Presets.FirstOrDefault();
+            }
+        }
+
+        private bool CanRemovePreset()
+            => SelectedPreset != null;
+
+        private void OnDuplicatePreset()
+        {
+            if (SelectedPreset == null)
+                return;
+
+            // create deep copy of selected preset
+            var original = SelectedPreset;
+            // generate a unique name
+            var baseName = original.Name + " - コピー";
+            var newName = baseName;
+            int i = 1;
+            while (Presets.Any(p => p.Name == newName))
+            {
+                i++;
+                newName = baseName + $" ({i})";
+            }
+
+            var copy = new Preset
+            {
+                Name = newName,
+                UrlTemplate = original.UrlTemplate,
+                Icon = original.Icon,
+                Description = original.Description
+            };
+
+            foreach (var e in original.Entries)
+            {
+                copy.Entries.Add(new Entry { Key = e.Key, Value = e.Value });
+            }
+
+            Presets.Add(copy);
+            SelectedPreset = copy;
+        }
+
+        private bool CanDuplicatePreset()
+            => SelectedPreset != null;
 
         /// <summary>アプリケーションを終了します。</summary>
         private void OnExit()
@@ -345,8 +484,12 @@ namespace ZkURLManager.ViewModels
 
             var data = new SettingsData
             {
-                UrlTemplate = this.UrlTemplate,
-                Entries = this.Entries.Select(e => new SettingsEntry { Key = e.Key ?? string.Empty, Value = e.Value ?? string.Empty }).ToList()
+                Presets = this.Presets.Select(p => new PresetSettings
+                {
+                    Name = p.Name,
+                    UrlTemplate = p.UrlTemplate ?? string.Empty,
+                    Entries = p.Entries.Select(e => new SettingsEntry { Key = e.Key ?? string.Empty, Value = e.Value ?? string.Empty }).ToList()
+                }).ToList()
             };
 
             try
@@ -378,15 +521,24 @@ namespace ZkURLManager.ViewModels
                 var xs = new XmlSerializer(typeof(SettingsData));
                 if (xs.Deserialize(fs) is SettingsData data)
                 {
-                    UrlTemplate = data.UrlTemplate ?? string.Empty;
-                    Entries.Clear();
-                    if (data.Entries != null)
+                    Presets.Clear();
+                    if (data.Presets != null)
                     {
-                        foreach (var se in data.Entries)
+                        foreach (var ps in data.Presets)
                         {
-                            Entries.Add(new Entry { Key = se.Key, Value = se.Value });
+                            var p = new Preset { Name = ps.Name, UrlTemplate = ps.UrlTemplate, Icon = ps.Icon ?? "Link", Description = ps.Description ?? string.Empty };
+                            if (ps.Entries != null)
+                            {
+                                foreach (var se in ps.Entries)
+                                {
+                                    p.Entries.Add(new Entry { Key = se.Key, Value = se.Value });
+                                }
+                            }
+                            Presets.Add(p);
                         }
                     }
+
+                    SelectedPreset = Presets.FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -396,18 +548,24 @@ namespace ZkURLManager.ViewModels
         }
 
         /// <summary>
-        /// 設定の保存/読み込み時に XML シリアル化で使用するコンテナクラス。
+        /// 設定の保存/読み込み時に XML シリアル化で使用するデータ構造（複数プリセット対応）。
         /// </summary>
         [Serializable]
         public class SettingsData
         {
+            public List<PresetSettings> Presets { get; set; } = new List<PresetSettings>();
+        }
+
+        [Serializable]
+        public class PresetSettings
+        {
+            public string Name { get; set; } = string.Empty;
             public string UrlTemplate { get; set; } = string.Empty;
+            public string Icon { get; set; } = "Link";
+            public string Description { get; set; } = string.Empty;
             public List<SettingsEntry> Entries { get; set; } = new List<SettingsEntry>();
         }
 
-        /// <summary>
-        /// SettingsData 内に格納される個々のエントリを表すクラス。
-        /// </summary>
         [Serializable]
         public class SettingsEntry
         {
