@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Dark overlay: overrides common brush keys used by the app and MaterialDesign integration -->
+  <Color x:Key="OverlayBackgroundColor">#0B1020</Color>
+  <Color x:Key="OverlaySurfaceColor">#0F1724</Color>
+  <Color x:Key="OverlayOnSurfaceColor">#E6EEF8</Color>
+  <Color x:Key="OverlayPrimaryColor">#7C5CFF</Color>
+  <Color x:Key="OverlayPrimaryDarkColor">#3A1F8A</Color>
+
+  <SolidColorBrush x:Key="MaterialDesignPaper" Color="{StaticResource OverlaySurfaceColor}" />
+  <SolidColorBrush x:Key="MaterialDesignBody" Color="{StaticResource OverlayOnSurfaceColor}" />
+  <SolidColorBrush x:Key="OnSurfaceBrush" Color="{StaticResource OverlayOnSurfaceColor}" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource OverlaySurfaceColor}" />
+  <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource OverlayBackgroundColor}" />
+  <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource OverlayPrimaryColor}" />
+  <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource OverlayPrimaryDarkColor}" />
+
+  <!-- DataGrid tweaks -->
+  <SolidColorBrush x:Key="DataGridRowBackground">#0F1A2B</SolidColorBrush>
+  <SolidColorBrush x:Key="DataGridAltRowBackground">#0B1624</SolidColorBrush>
+  <SolidColorBrush x:Key="DataGridGridLinesBrush">#112233</SolidColorBrush>
+
+  <Style TargetType="DataGrid">
+    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+    <Setter Property="RowBackground" Value="{StaticResource DataGridRowBackground}" />
+    <Setter Property="AlternatingRowBackground" Value="{StaticResource DataGridAltRowBackground}" />
+    <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}" />
+    <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource DataGridGridLinesBrush}" />
+    <Setter Property="VerticalGridLinesBrush" Value="{StaticResource DataGridGridLinesBrush}" />
+  </Style>
+
+  <Style TargetType="DataGridCell">
+    <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Style.Triggers>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}" />
+        <Setter Property="Foreground" Value="White" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+</ResourceDictionary>

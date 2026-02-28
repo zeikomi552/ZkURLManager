@@ -48,6 +48,49 @@ namespace ZkURLManager.ViewModels
                 => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        // テーマ切替用プロパティ
+        public ObservableCollection<string> AvailableThemes { get; } = new ObservableCollection<string> { "Light", "Dark" };
+
+        private string _selectedTheme = "Light";
+        public string SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                if (SetProperty(ref _selectedTheme, value))
+                {
+                    ApplyTheme(value);
+                }
+            }
+        }
+
+        private void ApplyTheme(string name)
+        {
+            try
+            {
+                var app = Application.Current;
+                if (app == null)
+                    return;
+
+                var md = app.Resources.MergedDictionaries;
+                // remove existing overlays
+                for (int i = md.Count - 1; i >= 0; i--)
+                {
+                    var src = md[i].Source?.OriginalString ?? string.Empty;
+                    if (src.EndsWith("Themes/LightTheme.xaml") || src.EndsWith("Themes/DarkTheme.xaml"))
+                        md.RemoveAt(i);
+                }
+
+                // add requested overlay
+                var overlay = name == "Dark" ? "Themes/DarkTheme.xaml" : "Themes/LightTheme.xaml";
+                md.Add(new ResourceDictionary { Source = new Uri(overlay, UriKind.Relative) });
+            }
+            catch
+            {
+                // ignore errors at runtime theme apply
+            }
+        }
+
         // ウィンドウタイトルのバックフィールド
         private string _title = "ZkURLManager";
 
@@ -417,10 +460,19 @@ namespace ZkURLManager.ViewModels
             System.Windows.Application.Current.Shutdown();
         }
 
-        /// <summary>空のエントリを追加して選択します。</summary>
+        /// <summary>空のエントリを追加して選択します（デフォルトのキー/値を設定）。</summary>
         private void OnAddEntry()
         {
-            var entry = new Entry { Key = "", Value = "" };
+            // デフォルトのキー/値を設定して追加（param1, param2... と value1, value2...）
+            var baseKey = "param";
+            int idx = 1;
+            string keyName = baseKey + idx;
+            while (Entries.Any(e => e.Key == keyName))
+            {
+                idx++;
+                keyName = baseKey + idx;
+            }
+            var entry = new Entry { Key = keyName, Value = "value" + idx };
             Entries.Add(entry);
             SelectedEntry = entry;
         }

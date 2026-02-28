@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using MahApps.Metro.Controls;
+using System.Windows;
 
 namespace ZkURLManager
 {
@@ -7,7 +8,7 @@ namespace ZkURLManager
     /// この部分クラスはコンポーネントを初期化するコンストラクタを含みます。
     /// 単純なウィンドウのため、追加のコードビハインドは不要です。
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         /// <summary>
         /// InitializeComponent は XAML をこの部分クラスに接続し、ビジュアルツリーを構築します。

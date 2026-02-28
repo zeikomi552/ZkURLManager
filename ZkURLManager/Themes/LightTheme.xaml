@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- Light overlay: small overrides to match app look -->
+  <Color x:Key="OverlayBackgroundColor">#FAFAFA</Color>
+  <Color x:Key="OverlaySurfaceColor">#FFFFFF</Color>
+  <Color x:Key="OverlayOnSurfaceColor">#222222</Color>
+  <Color x:Key="OverlayPrimaryColor">#6200EE</Color>
+  <Color x:Key="OverlayPrimaryDarkColor">#3700B3</Color>
+
+  <SolidColorBrush x:Key="MaterialDesignPaper" Color="{StaticResource OverlaySurfaceColor}" />
+  <SolidColorBrush x:Key="MaterialDesignBody" Color="{StaticResource OverlayOnSurfaceColor}" />
+  <SolidColorBrush x:Key="OnSurfaceBrush" Color="{StaticResource OverlayOnSurfaceColor}" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource OverlaySurfaceColor}" />
+  <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource OverlayBackgroundColor}" />
+  <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource OverlayPrimaryColor}" />
+  <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource OverlayPrimaryDarkColor}" />
+
+</ResourceDictionary>

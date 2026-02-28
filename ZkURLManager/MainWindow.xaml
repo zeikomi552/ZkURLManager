@@ -1,6 +1,7 @@
-﻿<Window x:Class="ZkURLManager.MainWindow"
+﻿<mah:MetroWindow x:Class="ZkURLManager.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZkURLManager"
@@ -8,10 +9,9 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="640" Width="1200"
-        Background="{DynamicResource MaterialDesignPaper}">
+        Title="{Binding Title}" Height="640" Width="1200">
     <Grid>
-        <Border Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="16" Margin="16">
+        <Border CornerRadius="8" Padding="16" Margin="16">
             <Border.Effect>
                 <DropShadowEffect Color="#22000000" BlurRadius="14" ShadowDepth="4" />
             </Border.Effect>
@@ -38,13 +38,13 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
-                        <Button Command="{Binding AddPresetCommand}" Style="{StaticResource MaterialDesignRaisedButton}" Width="60">追加</Button>
-                        <Button Command="{Binding DuplicatePresetCommand}" Style="{StaticResource MaterialDesignFlatButton}" Width="70" Margin="6,0,0,0">複製</Button>
-                        <Button Command="{Binding RemovePresetCommand}" Style="{StaticResource MaterialDesignFlatButton}" Width="60" Margin="6,0,0,0">削除</Button>
-                        <Button Command="{Binding DataContext.MovePresetUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="12,0,0,0">
+                        <Button Command="{Binding AddPresetCommand}" Style="{DynamicResource MaterialDesignRaisedButton}" Width="60">追加</Button>
+                        <Button Command="{Binding DuplicatePresetCommand}" Style="{DynamicResource MaterialDesignFlatButton}" Width="70" Margin="6,0,0,0">複製</Button>
+                        <Button Command="{Binding RemovePresetCommand}" Style="{DynamicResource MaterialDesignFlatButton}" Width="60" Margin="6,0,0,0">削除</Button>
+                        <Button Command="{Binding DataContext.MovePresetUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{DynamicResource MaterialDesignFlatButton}" Width="auto" Margin="12,0,0,0">
                             <materialDesign:PackIcon Kind="ArrowUp" Width="16" Height="16" />
                         </Button>
-                        <Button Command="{Binding DataContext.MovePresetDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="6,0,0,0">
+                        <Button Command="{Binding DataContext.MovePresetDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{DynamicResource MaterialDesignFlatButton}" Width="auto" Margin="6,0,0,0">
                             <materialDesign:PackIcon Kind="ArrowDown" Width="16" Height="16" />
                         </Button>
                     </StackPanel>
@@ -53,13 +53,13 @@
                 <!-- プリセット詳細 -->
                 <StackPanel Grid.Column="1" Margin="8">
                     <TextBlock Text="プリセット名" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding SelectedPreset.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,8" />
+                    <TextBox Text="{Binding SelectedPreset.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" />
 
                     <TextBlock Text="説明" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding SelectedPreset.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0,0,0,8" />
+                    <TextBox Text="{Binding SelectedPreset.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" />
 
                     <TextBlock Text="URL テンプレート" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding UrlTemplate, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" Style="{StaticResource MaterialDesignOutlinedTextBox}" Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" />
+                    <TextBox Text="{Binding UrlTemplate, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
 
                     <DataGrid ItemsSource="{Binding Entries}"
                               SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
@@ -76,61 +76,61 @@
                     </DataGrid>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
-                        <Button Command="{Binding AddEntryCommand}" Width="110" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button Command="{Binding AddEntryCommand}" Width="110" Style="{DynamicResource MaterialDesignRaisedButton}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="追加" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding RemoveEntryCommand}" Width="110" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button Command="{Binding RemoveEntryCommand}" Width="110" Style="{DynamicResource MaterialDesignRaisedButton}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="Minus" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="削除" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding DataContext.MoveEntryUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="8,0,0,0">
+                        <Button Command="{Binding DataContext.MoveEntryUpCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{DynamicResource MaterialDesignFlatButton}" Width="auto" Margin="8,0,0,0">
                             <materialDesign:PackIcon Kind="ArrowUp" Width="16" Height="16" />
                         </Button>
-                        <Button Command="{Binding DataContext.MoveEntryDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{StaticResource MaterialDesignFlatButton}" Width="auto" Margin="6,0,0,0">
+                        <Button Command="{Binding DataContext.MoveEntryDownCommand, RelativeSource={RelativeSource AncestorType=Window}}" Style="{DynamicResource MaterialDesignFlatButton}" Width="auto" Margin="6,0,0,0">
                             <materialDesign:PackIcon Kind="ArrowDown" Width="16" Height="16" />
                         </Button>
                     </StackPanel>
 
                     <TextBlock Text="生成された URL" Margin="0,0,0,4" />
-                    <TextBox Text="{Binding RenderedUrl, Mode=OneWay}" IsReadOnly="True"  Margin="0,0,0,12" Style="{StaticResource MaterialDesignOutlinedTextBox}" Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" />
+                    <TextBox Text="{Binding RenderedUrl, Mode=OneWay}" IsReadOnly="True"  Margin="0,0,0,12"/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0">
-                        <Button Command="{Binding OpenUrlCommand}" Width="140" Style="{StaticResource MaterialDesignFlatButton}">
+                        <Button Command="{Binding OpenUrlCommand}" Width="140" Style="{DynamicResource MaterialDesignFlatButton}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="開く" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding SaveCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button Command="{Binding SaveCommand}" Width="120" Style="{DynamicResource MaterialDesignRaisedButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentSave" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="保存" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding LoadCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <Button Command="{Binding LoadCommand}" Width="120" Style="{DynamicResource MaterialDesignRaisedButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderOpen" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="読み込む" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding CopyParametersCommand}" Width="180" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <Button Command="{Binding CopyParametersCommand}" Width="180" Style="{DynamicResource MaterialDesignOutlinedButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="パラメータをコピー" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding CopyParameterTemplateCommand}" Width="180" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <Button Command="{Binding CopyParameterTemplateCommand}" Width="180" Style="{DynamicResource MaterialDesignOutlinedButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="テンプレートをコピー" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding ExitCommand}" Width="120" Style="{StaticResource MaterialDesignFlatButton}">
+                        <Button Command="{Binding ExitCommand}" Width="120" Style="{DynamicResource MaterialDesignFlatButton}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="ExitToApp" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
                                 <TextBlock Text="終了" VerticalAlignment="Center" />
@@ -141,4 +141,4 @@
             </Grid>
         </Border>
     </Grid>
-</Window>
+</mah:MetroWindow>
