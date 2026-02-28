@@ -5,44 +5,93 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZkURLManager"
         xmlns:prism="http://prismlibrary.com/"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="500" Width="900">
+        Title="{Binding Title}" Height="640" Width="960"
+        Background="{DynamicResource MaterialDesignPaper}">
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16" Width="760">
-            <TextBlock Text="{Binding Title}" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+        <Border Background="{DynamicResource MaterialDesignCardBackground}" CornerRadius="8" Padding="20" Margin="20">
+            <Border.Effect>
+                <DropShadowEffect Color="#44000000" BlurRadius="18" ShadowDepth="6" />
+            </Border.Effect>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="820">
+                <TextBlock Text="{Binding Title}" FontSize="22" HorizontalAlignment="Center" Margin="0,0,0,12" FontWeight="SemiBold" Foreground="{DynamicResource MaterialDesignBody}" />
 
-            <TextBlock Text="URL テンプレート" Margin="0,0,0,4" />
-            <TextBox Text="{Binding UrlTemplate, UpdateSourceTrigger=PropertyChanged}" Height="28" Margin="0,0,0,8" />
+                <TextBlock Text="URL テンプレート" Margin="0,0,0,4" />
+                <TextBox Text="{Binding UrlTemplate, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8" Style="{StaticResource MaterialDesignOutlinedTextBox}" Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" />
 
-            <DataGrid ItemsSource="{Binding Entries}"
-                      SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      Height="220"
-                      Margin="0,0,0,12">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=TwoWay}" Width="*" />
-                    <DataGridTextColumn Header="Value" Binding="{Binding Value, Mode=TwoWay}" Width="2*" />
-                </DataGrid.Columns>
-            </DataGrid>
+                <DataGrid ItemsSource="{Binding Entries}"
+                          SelectedItem="{Binding SelectedEntry, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          Height="220"
+                          Margin="0,0,0,12"
+                          RowHeaderWidth="0"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Key" Binding="{Binding Key, Mode=TwoWay}" Width="*" />
+                        <DataGridTextColumn Header="Value" Binding="{Binding Value, Mode=TwoWay}" Width="2*" />
+                    </DataGrid.Columns>
+                </DataGrid>
 
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
-                <Button Content="追加" Command="{Binding AddEntryCommand}" Width="120" Margin="0,0,8,0" />
-                <Button Content="削除" Command="{Binding RemoveEntryCommand}" Width="120" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
+                    <Button Command="{Binding AddEntryCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="追加" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding RemoveEntryCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Minus" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="削除" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <TextBlock Text="生成された URL" Margin="0,0,0,4" />
+                <TextBox Text="{Binding RenderedUrl, Mode=OneWay}" IsReadOnly="True"  Margin="0,0,0,12" Style="{StaticResource MaterialDesignOutlinedTextBox}" Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0">
+                    <Button Command="{Binding OpenUrlCommand}" Width="140" Style="{StaticResource MaterialDesignFlatButton}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="開く" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding SaveCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentSave" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="保存" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding LoadCommand}" Width="120" Style="{StaticResource MaterialDesignRaisedButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FolderOpen" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="読み込む" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding CopyParametersCommand}" Width="180" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="パラメータをコピー" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding CopyParameterTemplateCommand}" Width="180" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="テンプレートをコピー" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding ExitCommand}" Width="120" Style="{StaticResource MaterialDesignFlatButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ExitToApp" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,6,0" />
+                            <TextBlock Text="終了" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
             </StackPanel>
-
-            <TextBlock Text="生成された URL" Margin="0,0,0,4" />
-            <TextBox Text="{Binding RenderedUrl, Mode=OneWay}" IsReadOnly="True" Height="28" Margin="0,0,0,12" />
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0">
-                <Button Content="開く" Command="{Binding OpenUrlCommand}" Width="120" Margin="0,0,8,0" />
-                <Button Content="保存" Command="{Binding SaveCommand}" Width="120" Margin="0,0,8,0" />
-                <Button Content="読み込む" Command="{Binding LoadCommand}" Width="120" Margin="0,0,8,0" />
-                <Button Content="パラメータをコピー" Command="{Binding CopyParametersCommand}" Width="160" Margin="0,0,8,0" />
-                <Button Content="テンプレートをコピー" Command="{Binding CopyParameterTemplateCommand}" Width="160" Margin="0,0,8,0" />
-                <Button Content="終了" Command="{Binding ExitCommand}" Width="120"/>
-            </StackPanel>
-        </StackPanel>
+        </Border>
     </Grid>
 </Window>

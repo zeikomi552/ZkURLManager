@@ -15,6 +15,16 @@
   <ItemGroup>
     <PackageReference Include="Prism.Unity" Version="9.0.537" />
     <PackageReference Include="Prism.Wpf" Version="9.0.537" />
+    <!-- Material Design in XAML (official) -->
+    <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+    <PackageReference Include="MaterialDesignColors" Version="2.2.2" />
+    <!--
+      本格的な MaterialDesign を導入する場合は以下のパッケージを追加してください。
+      例:
+        <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
+        <PackageReference Include="MaterialDesignColors" Version="2.2.2" />
+      今回は簡易的なテーマを用意したため外部パッケージは追加していません。
+    -->
   </ItemGroup>
 
 </Project>
